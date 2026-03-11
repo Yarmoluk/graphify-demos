@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Not Codex? — Graphify.md vs Coding Agents</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #e0e0e0; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+  .header {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    text-align: center;
+  }
+  .header h1 { font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .header .sub { font-size: 1.1rem; color: #8b5cf6; letter-spacing: 2px; text-transform: uppercase; }
+  .header .tagline { font-size: 0.95rem; color: #94a3b8; margin-top: 12px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+
+  .section { max-width: 1100px; margin: 0 auto; padding: 50px 40px; }
+  .section-title {
+    font-size: 1.5rem; font-weight: 700; color: #8b5cf6; margin-bottom: 30px;
+    padding-bottom: 12px; border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+
+  /* Comparison table */
+  .comp-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; margin-bottom: 40px; }
+  .comp-table th {
+    padding: 16px 20px; text-align: left; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 2px; font-weight: 700;
+  }
+  .comp-table th:first-child { background: rgba(0,0,0,0.4); color: #64748b; width: 22%; }
+  .comp-table th:nth-child(2) { background: rgba(100,116,139,0.15); color: #94a3b8; width: 39%; }
+  .comp-table th:nth-child(3) { background: rgba(139,92,246,0.15); color: #8b5cf6; width: 39%; }
+  .comp-table td { padding: 14px 20px; font-size: 0.85rem; line-height: 1.5; vertical-align: top; border-bottom: 1px solid rgba(139,92,246,0.08); }
+  .comp-table td:first-child { background: rgba(0,0,0,0.2); color: #a78bfa; font-weight: 600; font-size: 0.8rem; }
+  .comp-table td:nth-child(2) { background: rgba(0,0,0,0.1); color: #94a3b8; }
+  .comp-table td:nth-child(3) { background: rgba(139,92,246,0.04); color: #e2e8f0; }
+  .comp-table tr:last-child td { border-bottom: none; }
+
+  /* Scenario cards */
+  .scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+  .scenario-card {
+    border-radius: 16px; padding: 28px; position: relative; overflow: hidden;
+  }
+  .scenario-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .scenario-card h3 { font-size: 1.05rem; color: #fff; margin-bottom: 6px; }
+  .scenario-card .scenario-ask { font-size: 0.8rem; color: #94a3b8; font-style: italic; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .scenario-card .answer-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 6px; }
+  .scenario-card p { font-size: 0.82rem; line-height: 1.5; margin-bottom: 8px; }
+
+  .codex-card {
+    background: rgba(100,116,139,0.08); border: 1px solid rgba(100,116,139,0.2);
+  }
+  .codex-card::before { background: #64748b; }
+  .codex-card .answer-label { color: #64748b; }
+  .codex-card p { color: #94a3b8; }
+
+  .graphify-card {
+    background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);
+  }
+  .graphify-card::before { background: linear-gradient(90deg, #8b5cf6, #06b6d4); }
+  .graphify-card .answer-label { color: #8b5cf6; }
+  .graphify-card p { color: #e2e8f0; }
+
+  .verdict {
+    background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 10px; padding: 12px 16px; margin-top: 4px;
+  }
+  .verdict p { color: #fbbf24 !important; font-weight: 600; font-size: 0.8rem !important; }
+
+  /* Quote */
+  .big-quote {
+    background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(6,182,212,0.05));
+    border: 1px solid rgba(139,92,246,0.25);
+    border-radius: 16px; padding: 40px; margin: 40px 0; text-align: center;
+  }
+  .big-quote blockquote {
+    font-size: 1.1rem; color: #e2e8f0; line-height: 1.7;
+    max-width: 800px; margin: 0 auto; font-style: italic;
+  }
+  .big-quote .attribution { font-size: 0.8rem; color: #8b5cf6; margin-top: 16px; font-style: normal; }
+
+  /* Proof banner */
+  .proof-banner {
+    background: linear-gradient(90deg, rgba(34,197,94,0.08), rgba(139,92,246,0.08));
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 16px; padding: 32px; text-align: center; margin-top: 40px;
+  }
+  .proof-banner h3 { font-size: 1.2rem; color: #fff; margin-bottom: 8px; }
+  .proof-banner p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 16px; }
+  .proof-banner a {
+    display: inline-block; background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    color: white; text-decoration: none; padding: 12px 28px; border-radius: 8px;
+    font-weight: 600; font-size: 0.9rem; transition: all 0.3s;
+  }
+  .proof-banner a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(139,92,246,0.3); }
+
+  .footer { text-align: center; padding: 40px; font-size: 0.75rem; color: #475569; border-top: 1px solid rgba(139,92,246,0.1); margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="sub">Graphify.md</div>
+  <h1>Why Not Codex?</h1>
+  <p class="tagline">Coding agents write software. Knowledge graphs make expertise visible. They're not the same thing — and confusing them costs you the most important part.</p>
+</div>
+
+<!-- THE TABLE -->
+<div class="section">
+  <div class="section-title">Side by Side</div>
+
+  <table class="comp-table">
+    <tr>
+      <th></th>
+      <th>Codex / Coding Agents</th>
+      <th>Graphify.md / Knowledge Graphs</th>
+    </tr>
+    <tr>
+      <td>What it is</td>
+      <td>A cloud-based software engineering agent (OpenAI). Writes, refactors, and tests code in sandboxed containers.</td>
+      <td>A knowledge graph engine. Extracts domain expertise, maps relationships, connects to published data, and makes invisible knowledge visible.</td>
+    </tr>
+    <tr>
+      <td>Input</td>
+      <td>GitHub repos, codebases, pull requests</td>
+      <td>A LinkedIn URL. A conversation. A career. A methodology. Anything with knowledge trapped inside.</td>
+    </tr>
+    <tr>
+      <td>Output</td>
+      <td>Code: refactored files, test suites, documentation, bug fixes, scaffolded features</td>
+      <td>Knowledge graphs: entities, relationships, domain intelligence, published science connections, cross-domain insights, content, curricula</td>
+    </tr>
+    <tr>
+      <td>Understands</td>
+      <td>Software patterns, syntax, APIs, code architecture</td>
+      <td>Domain expertise, cross-discipline connections, market data, research literature, the shape of what someone <em>knows</em></td>
+    </tr>
+    <tr>
+      <td>Speed</td>
+      <td>Fast at code tasks. Parallel PR generation.</td>
+      <td>Built a full domain analysis — 16 entities, 27 relationships, 6 domains researched, 12 published sources — from a single LinkedIn URL in ~20 minutes.</td>
+    </tr>
+    <tr>
+      <td>Works for</td>
+      <td>Software engineers, dev teams, code repos</td>
+      <td>Anyone with deep expertise: coaches, clinicians, consultants, subject matter experts, practitioners with decades of knowledge in their head</td>
+    </tr>
+    <tr>
+      <td>The gap</td>
+      <td>Doesn't know what you <em>know</em>. Can't map expertise. Can't connect your work to published science. Can't surface cross-domain insights.</td>
+      <td>Doesn't write production software. That's not the point. The point is making knowledge <em>visible</em> so it can be shared, scaled, and built upon.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- SCENARIOS -->
+<div class="section">
+  <div class="section-title">Same Person, Same Question — Different Answers</div>
+  <p style="font-size:0.9rem;color:#94a3b8;margin-bottom:30px;">Imagine a movement therapist with 20 years of experience across parkour, gymnastics, neurology, and music asks each tool for help.</p>
+
+  <div class="scenario-grid">
+    <div class="scenario-card codex-card">
+      <h3>Codex</h3>
+      <div class="scenario-ask">"Help me scale my practice"</div>
+      <div class="answer-label">Codex responds</div>
+      <p>"I can build you a booking system, a client portal, or a React website. Send me your GitHub repo and I'll scaffold the components."</p>
+      <p>Codex builds the <strong>software</strong>. It has no idea what you actually do, why your approach works, or what makes you different.</p>
+    </div>
+    <div class="scenario-card graphify-card">
+      <h3>Graphify.md</h3>
+      <div class="scenario-ask">"Help me scale my practice"</div>
+      <div class="answer-label">Graphify.md responds</div>
+      <p>"Your DJ background means you intuitively understand the 120 BPM window that clinical studies show produces +16% gait improvement in Parkinson's patients. Your parkour certification maps directly to emerging neuroplasticity research. You're sitting on 5.9 million undiagnosed Essential Tremor patients who have no movement-based therapy option between medication and brain surgery. Let me map all of this."</p>
+      <div class="verdict"><p>Graphify.md understands what you know. Codex understands what you code.</p></div>
+    </div>
+  </div>
+
+  <div class="scenario-grid">
+    <div class="scenario-card codex-card">
+      <h3>Codex</h3>
+      <div class="scenario-ask">"What makes me different from other therapists?"</div>
+      <div class="answer-label">Codex responds</div>
+      <p>"I don't have context on your therapy practice. I can help you write a Python script to analyze competitor websites, or build a comparison landing page."</p>
+      <p>It's a coding tool. It doesn't know your domain.</p>
+    </div>
+    <div class="scenario-card graphify-card">
+      <h3>Graphify.md</h3>
+      <div class="scenario-ask">"What makes me different from other therapists?"</div>
+      <div class="answer-label">Graphify.md responds</div>
+      <p>"You're the only practitioner I can find who combines certified parkour coaching, USA Gymnastics credentials, DJ/rhythm expertise, and clinical neuroscience training — applied to Parkinson's, MS, Essential Tremor, and Huntington's. The research is catching up to what you've been doing for 20 years. MedRhythms just got FDA clearance for a device that does a fraction of what you do with your hands and ears."</p>
+      <div class="verdict"><p>The knowledge graph sees what you can't see about yourself — because it connects domains you didn't know were connected.</p></div>
+    </div>
+  </div>
+
+  <div class="scenario-grid">
+    <div class="scenario-card codex-card">
+      <h3>Codex</h3>
+      <div class="scenario-ask">"I want to train other coaches in my methodology"</div>
+      <div class="answer-label">Codex responds</div>
+      <p>"I can build you an LMS platform with user authentication, video hosting, progress tracking, and certificate generation. What framework do you prefer?"</p>
+      <p>It builds the <strong>container</strong>. What goes inside? That's your problem.</p>
+    </div>
+    <div class="scenario-card graphify-card">
+      <h3>Graphify.md</h3>
+      <div class="scenario-ask">"I want to train other coaches in my methodology"</div>
+      <div class="answer-label">Graphify.md responds</div>
+      <p>"Let's extract your methodology into a knowledge graph first — every protocol, every condition-specific adaptation, every cross-domain connection. Then we generate the curriculum <em>from the graph</em>: chapters ordered by dependency, exercises mapped to conditions, assessments tied to competencies. The graph ensures every certified coach learns YOUR methodology, not a diluted version."</p>
+      <div class="verdict"><p>Codex builds the school. Graphify.md writes the textbook — from the actual knowledge.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- THE QUOTE -->
+<div class="section" style="padding-top:0;">
+  <div class="big-quote">
+    <blockquote>"The most valuable thing in any organization isn't the software — it's the knowledge trapped in the heads of the people who built it. Coding agents make better software. Knowledge graphs make that knowledge <strong>visible, shareable, and permanent</strong>."</blockquote>
+    <div class="attribution">— The case for knowledge graphs over coding agents</div>
+  </div>
+</div>
+
+<!-- THE REAL DIFFERENCE -->
+<div class="section">
+  <div class="section-title">The Real Difference</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px;">
+    <div style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);border-radius:16px;padding:28px;">
+      <h3 style="color:#94a3b8;font-size:1.1rem;margin-bottom:16px;">Codex asks:</h3>
+      <p style="font-size:1.3rem;color:#64748b;font-weight:700;line-height:1.4;">"What do you want me to build?"</p>
+      <p style="font-size:0.85rem;color:#64748b;margin-top:12px;">You need to already know what you need. Codex executes your instructions in code.</p>
+    </div>
+    <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:28px;">
+      <h3 style="color:#8b5cf6;font-size:1.1rem;margin-bottom:16px;">Graphify.md asks:</h3>
+      <p style="font-size:1.3rem;color:#e2e8f0;font-weight:700;line-height:1.4;">"What do you know — and who needs to see it?"</p>
+      <p style="font-size:0.85rem;color:#cbd5e1;margin-top:12px;">You bring the expertise. The graph reveals what's in it, connects it to the world, and shows you what you didn't know you had.</p>
+    </div>
+  </div>
+
+  <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(139,92,246,0.15);border-radius:16px;padding:28px;">
+    <h3 style="color:#fff;font-size:1rem;margin-bottom:16px;">When to use what:</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <p style="font-size:0.8rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Use Codex when you need to:</p>
+        <ul style="list-style:none;padding:0;">
+          <li style="font-size:0.85rem;color:#94a3b8;padding:4px 0;">Write or refactor code</li>
+          <li style="font-size:0.85rem;color:#94a3b8;padding:4px 0;">Build software features</li>
+          <li style="font-size:0.85rem;color:#94a3b8;padding:4px 0;">Generate test suites</li>
+          <li style="font-size:0.85rem;color:#94a3b8;padding:4px 0;">Fix bugs in a codebase</li>
+          <li style="font-size:0.85rem;color:#94a3b8;padding:4px 0;">Scaffold a web app</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-size:0.8rem;color:#8b5cf6;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Use Graphify.md when you need to:</p>
+        <ul style="list-style:none;padding:0;">
+          <li style="font-size:0.85rem;color:#e2e8f0;padding:4px 0;">Map what an expert knows</li>
+          <li style="font-size:0.85rem;color:#e2e8f0;padding:4px 0;">Connect domains to published research</li>
+          <li style="font-size:0.85rem;color:#e2e8f0;padding:4px 0;">Surface cross-discipline insights</li>
+          <li style="font-size:0.85rem;color:#e2e8f0;padding:4px 0;">Generate content from expertise (not hallucination)</li>
+          <li style="font-size:0.85rem;color:#e2e8f0;padding:4px 0;">Build curricula, training programs, coaching systems</li>
+          <li style="font-size:0.85rem;color:#e2e8f0;padding:4px 0;">Scale a practitioner beyond their calendar</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROOF -->
+<div class="section">
+  <div class="proof-banner">
+    <h3>See It In Action</h3>
+    <p>We took a single LinkedIn URL and built a full knowledge graph — 16 entities, 27 relationships, 6 domains researched, 12 published sources connected — in 20 minutes. No code repo needed. No GitHub. Just a URL and a question: "What does this person know?"</p>
+    <a href="graphify-rolandlab-kg.html">View the RolandLab Knowledge Graph Experiment &rarr;</a>
+  </div>
+</div>
+
+<div class="footer">
+  Graphify.md // Knowledge Graph Intelligence // March 2026<br>
+  Different tool. Different question. Different answer.
+</div>
+
+</body>
+</html>
